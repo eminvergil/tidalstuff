@@ -1,0 +1,177 @@
+
+d3 $sound(samples "breaks152" (run 8))
+
+hush
+
+
+d1 
+$ juxBy 0.6 (|*| speed "2")
+$ loopAt 2
+$ slow 4
+$ chop 16 
+$ rev
+$ every 4 (|+|speed "4 3 2 1 0")
+$ rarely (|+| room "0.2")
+$ sometimes (|+| delay "0.2")
+$ sound "breaks165*3"
+
+
+
+
+
+
+
+
+
+
+
+
+
+let inv 1 = 0.25
+    inv 0 = 0.75
+
+let vov a = o
+    vov o = u
+    vov o = i
+
+do 
+    let pat = "[1 1 0/2 1/2 0/2 1 0 1]"
+    let b = "[a o o u i e]"
+
+    let cc = ([1,0.9..0.1] ++ [0.1,0.5..1])
+    d1 $slow 1$(0.25 <~)$ gain pat # sound "bd" #vowel (vov<$>b) #up (pat)
+    d2 $slow 1$(0.25 <~)$ speed (inv <$> pat) # sound "sn" #vowel b #up (inv <$> pat)
+    d3 $fast 1$spaceOut cc $gain (inv <$>pat)#sound "cp" #gain "0.6"
+
+d1 $ sound "sn"
+
+hush
+
+
+
+
+do
+    let ca = ([1,0.5..0]++[0,0.5..1])
+    let be = "[1 -1 1 2 4 0 1 0 1 4]/8"
+    d1 $slow 1$stack [
+        stut' 1 (0.125)(|+| up "1 2 4 1 1 0")$ sound "808bd"
+        #cut "2",
+        stut' 8 (0.125)(|*| n (irand 4)) $ sound "ades2*4"
+        #cut "3",
+        stut' 8 (0.125)((|*| n (irand 4)).(|*| vowel "{a o o u i}%8")) $ sound "sd*8" # speed be #gain "0.8"
+        #cut "4",
+        spaceOut (ca)$stut' 3 (0.125)(|*| speed "-1 1 0") $ sound "d/4 ~ ~ ~" # cut "1"]
+        # gain "0.8"
+
+hush
+
+
+
+
+
+
+do
+    let cs = ([0.05,0.1..2] ++ [2,1.95..0.1])
+    d1
+    $foldEvery [3,4] (0.125 <~)
+    $spaceOut cs 
+    $every 4 (|*| speed "1 2 0 4 1")
+    $ stack [
+        sound "ifdrums*2" #gain "0.7" #cut "3",
+        stut' 16 (0.125)((|*| speed "6 5 8 4").(|*| vowel "{a o u}%3"))
+        $sound "sine*2 ~ ~ ~ ~" #gain "0.5" #cut "2",
+        sound "~ ~ ~ ~ ~ ~cp" #gain "0.6" #cut "1",
+        stut' 4 (0.125)(#gain "0.7 0.3")$
+        sound "~ ~ ~ hc*2" #gain "0.45" #cut "4"
+    ]
+
+hush
+
+
+$foldEvery [3,4] (<~ 0.125) 
+    
+
+
+
+
+
+do
+    let vv = ([0.1,0.2..1]++[1,0.9..0.1])
+    t1 (superwash (# accelerate "4 2 -2 -4") (striate 2) 1 4 6)
+    $whenmod 15 7 (|*| speed "{1 4 2 8}%4")
+    $whenmod 15 8 (jux (iter 1))
+    $someCyclesBy 0.75 (0.125 <~)
+    $stack[
+        striate 1$stut' 32 (0.125)(|*| speed "1 4 0")$
+        loopAt 1$ sound "feelfx*4" #gain "1" #cut  "1",
+        sound "bass1*2" # gain "0.65" #cut "2",
+        sound "~ ~ ~ ~ ~ bassdm" # gain "0.65" #cut "3",
+        sound "~ ~ 808sd*4" # gain "0.65" #cut "4"
+        ]
+        #hcutoff "0.5"
+        #hpq "0.5"
+        #size "2"
+        #room "0.01"
+        #vowel "o"
+
+
+    hush
+
+
+
+do
+    let ff = ([1,0.9..0.1]++[0.1,0.2..1])
+    d1
+    $whenmod 16 5 (#speed "{1}%4")
+    $foldEvery [8,10] (0.125 ~>)
+    $fast 2
+    $stut 2 0.2 1
+    $spaceOut ff
+    $palindrome
+    $stack 
+    [
+        sound "~ ~ ~ 808bd/2" #gain "0.75" #cut "1",
+        sound "808sd" #gain "0.75" #cut "2",
+        sound "808lc/4 ~ ~ ~ ~ ~" #gain "0.65" #cut "3",
+        sound "~ ~ ~ 808oh/2" #cut "4" #gain "0.5"
+    ]
+    #hpf "0.5"
+    #delay "0.2"
+    #delayfeedback "0.1"
+    #delaytime "0.1"
+    #hpq "0.1"
+    #crush "10"
+    #n (run (16))
+
+
+hush
+
+
+
+
+
+
+
+
+
+
+import Sound.Tidal.MIDI.Context
+
+devices <- midiDevices
+
+m1 <- midiStream devices "USB MIDI Device" 1 synthController
+
+
+
+
+
+let f x y = x*x y*y
+
+bps(120/130)
+
+d1 $sound "808bd ~ ~ hc ~ ~ 808bd*2 ~ ~ hc" #gain "0.9"
+d2 $fast 8$ sound "sine*4" #gain "0.4" #speed "{7 4 8 10}%4" #n (scale 4 10 $ slow 5 saw)
+d3 $sound "~ ~ ~ ~ ~ bass0/2" # gain "0.6"
+d3 silence
+hush
+
